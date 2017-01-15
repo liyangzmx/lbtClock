@@ -27,6 +27,7 @@ public:
         this->setWindowFlags(Qt::FramelessWindowHint);
         this->setWindowTitle(tr("Libratone Clock"));
         int side = qMin(width(), height());
+        side *= 2;
         this->resize(QSize(side, side));
         this->setAttribute(Qt::WA_TranslucentBackground, true);
     }
@@ -48,21 +49,21 @@ protected:
         return QWidget::mouseMoveEvent(event);
     }
 
-    void mouseReleaseEvent(QMouseEvent *event){
+    void mouseReleaseEvent(QMouseEvent *){
         moving = false;
     }
 
     void paintEvent(QPaintEvent *){
-        static const QPoint hourHand[3] = {
-            QPoint(1, 1),
-            QPoint(-1, 1),
-            QPoint(0, -40)
-        };
-        static const QPoint minuteHand[3] = {
-            QPoint(1, 1),
-            QPoint(-1, 1),
-            QPoint(0, -70)
-        };
+//        static const QPoint hourHand[3] = {
+//            QPoint(1, 1),
+//            QPoint(-1, 1),
+//            QPoint(0, -40)
+//        };
+//        static const QPoint minuteHand[3] = {
+//            QPoint(1, 1),
+//            QPoint(-1, 1),
+//            QPoint(0, -70)
+//        };
 
         QColor color(0, 0x71, 0x79);
 
@@ -82,6 +83,18 @@ protected:
         painter.setBrush(Qt::white);
         painter.drawEllipse(-98, -98, 198, 198);
 
+        painter.save();
+        painter.scale(1 / 3.0, 1 / 3.0);
+        QPixmap pix;
+        float scale = 1; // / 2.0;
+        pix.load(":/images/logo.png");
+        painter.drawPixmap(-pix.width() * scale / 2,
+                           -pix.height() * scale / 2 + 120,
+                           pix.width() * scale, pix.height() * scale,
+                           pix.scaled(pix.width() * scale, pix.height() * scale, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)
+                           );
+
+        painter.restore();
         pen.setStyle(Qt::SolidLine);
         pen.setWidth(1);
         painter.setPen(pen);
@@ -90,7 +103,7 @@ protected:
         pen.setWidth(2);
         painter.setPen(pen);
         painter.rotate(30.0 * ((time.hour() + time.minute() / 60.0)) - 90.0);
-        qDebug() << time;
+//        qDebug() << time;
 //        painter.drawConvexPolygon(hourHand, 3);
         painter.drawLine(0, 0, 55.0, 0);
         painter.restore();
@@ -113,7 +126,7 @@ protected:
 
         for(int j = 0; j < 60; ++j){
             if(j % 5 != 0)
-                painter.drawLine(92, 0, 96, 0);
+                painter.drawLine(90, 0, 96, 0);
             painter.rotate(6.0);
         }
 
